@@ -1,7 +1,7 @@
-# Discord GPT-3 Bot
+# Discord GPT-5 Bot
 
-create .env file in same folder location with the following lines
+Create a `.env` file in the same folder with the following entries
 
 DISCORD_TOKEN="Your Discord Token here"
  
-OPENAI_KEY="Your Open AI Key here"
+OPENAI_KEY="Your OpenAI API key here"
