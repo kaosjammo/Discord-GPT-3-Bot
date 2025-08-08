@@ -1,35 +1,34 @@
-# Discord bot integrated with GPT API
+# Discord bot integrated with OpenAI GPT-5 API
 import os
 import discord
-import openai
+from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.getenv('DISCORD_TOKEN')
-openai.api_key = os.getenv('OPENAI_KEY')
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+OPENAI_KEY = os.getenv('OPENAI_KEY')
+
+openai_client = OpenAI(api_key=OPENAI_KEY)
 
 intents = discord.Intents.all()
-client = discord.Client(command_prefix='!', intents=intents)
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_message(message):
-# Only respond to messages from other users, not from the bot
+    """Respond to messages that mention the bot using OpenAI's GPT-5 model."""
     if message.author == client.user:
         return
-    
-    # Only respond if @mentioned bot, check if the bot is mentioned in message
-    if client.user in message.mentions:
-        # Use the OpenAI API to generate a response to the message
-        response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=f"{message.content}",
-        max_tokens=4000,
-        temperature=0.7,
-        )
-        
-        # Send the response as a message
-        await message.channel.send(response.choices[0].text)
 
-# start the bot
-client.run(TOKEN)
+    if client.user in message.mentions:
+        completion = openai_client.chat.completions.create(
+            model="gpt-5",
+            messages=[{"role": "user", "content": message.content}],
+            max_tokens=4000,
+            temperature=0.7,
+        )
+        reply = completion.choices[0].message["content"]
+        await message.channel.send(reply)
+
+# Start the bot
+client.run(DISCORD_TOKEN)
